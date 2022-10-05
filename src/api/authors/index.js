@@ -42,13 +42,13 @@ authorsRouter.post("/checkEmail", (request, response) => {
 
     fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
 
-    console.log("Unique Email, new author is posted")
+    console.log("Unique Email, new author is posted");
 
     response.status(201).send({ id: newAuthor.id });
   } else {
-    console.log("Email already in use")
-    
-    response.status(400).send()
+    console.log("Email already in use");
+
+    response.status(400).send();
   }
 });
 
@@ -59,8 +59,6 @@ authorsRouter.get("/", (request, response) => {
 });
 
 authorsRouter.get("/:authorId", (request, response) => {
-  //   const authorId = request.params.authorId;
-
   console.log(request.params.authorId);
 
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
@@ -78,8 +76,6 @@ authorsRouter.get("/:authorId", (request, response) => {
 });
 
 authorsRouter.put("/:authorId", (request, response) => {
-  //   const authorId = request.params.authorId;
-
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
 
   const authorIndex = authorsArray.findIndex(
@@ -100,8 +96,6 @@ authorsRouter.put("/:authorId", (request, response) => {
 });
 
 authorsRouter.delete("/:authorId", (request, response) => {
-  //   const authorId = request.params.authorId;
-
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
 
   const newAuthorsArray = authorsArray.filter(
