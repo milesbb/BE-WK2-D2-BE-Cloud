@@ -26,6 +26,32 @@ authorsRouter.post("/", (request, response) => {
   response.status(201).send({ id: newAuthor.id });
 });
 
+// check email post
+
+authorsRouter.post("/checkEmail", (request, response) => {
+  const newAuthor = { ...request.body, createdAt: new Date(), id: uniqid() };
+  console.log("New Author:", newAuthor);
+
+  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+
+  if (
+    authorsArray.findIndex((author) => author.email === request.body.email) ===
+    -1
+  ) {
+    authorsArray.push(newAuthor);
+
+    fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
+
+    console.log("Unique Email, new author is posted")
+
+    response.status(201).send({ id: newAuthor.id });
+  } else {
+    console.log("Email already in use")
+    
+    response.status(400).send()
+  }
+});
+
 authorsRouter.get("/", (request, response) => {
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
   console.log("Get all authors:", authorsArray);
