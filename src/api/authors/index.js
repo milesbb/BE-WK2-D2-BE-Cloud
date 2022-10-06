@@ -100,6 +100,23 @@ authorsRouter.get("/:authorId", (request, response) => {
   response.send(requestedAuthor);
 });
 
+authorsRouter.get("/:authorId/blogPosts", (request, response) => {
+  const blogPostsAddress = join(dirname(dirname(fileURLToPath(import.meta.url)),
+  "authors.json"), "blogPosts/blogPosts.json")
+
+  const blogPosts = JSON.parse(fs.readFileSync(blogPostsAddress))
+
+  const authorsArray = getAuthors();
+
+  const requestedAuthor = authorsArray.find(
+    (author) => author.id === request.params.authorId
+  );
+
+  const authorsPosts = blogPosts.filter((blogPost)=>blogPost.author.name === requestedAuthor.name)
+
+  response.send(authorsPosts)
+})
+
 authorsRouter.put("/:authorId", (request, response) => {
   const avatarUrl =
     "https://ui-avatars.com/api/?name=" +
