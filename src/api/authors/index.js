@@ -9,6 +9,10 @@ const authorsJSONPath = join(
   "authors.json"
 );
 
+const getAuthors = () => JSON.parse(fs.readFileSync(authorsJSONPath));
+const writeAuthors = (authorsArray) =>
+  fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
+
 console.log("Location of data:", authorsJSONPath);
 
 const authorsRouter = express.Router();
@@ -28,11 +32,11 @@ authorsRouter.post("/", (request, response) => {
   };
   console.log("New Author:", newAuthor);
 
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const authorsArray = getAuthors();
 
   authorsArray.push(newAuthor);
 
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
+  writeAuthors(authorsArray);
 
   response.status(201).send({ id: newAuthor.id });
 });
@@ -53,7 +57,7 @@ authorsRouter.post("/checkEmail", (request, response) => {
   };
   console.log("New Author:", newAuthor);
 
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const authorsArray = getAuthors();
 
   if (
     authorsArray.findIndex((author) => author.email === request.body.email) ===
@@ -61,7 +65,7 @@ authorsRouter.post("/checkEmail", (request, response) => {
   ) {
     authorsArray.push(newAuthor);
 
-    fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
+    writeAuthors(authorsArray);
 
     console.log("Unique Email, new author is posted");
 
@@ -82,7 +86,7 @@ authorsRouter.get("/", (request, response) => {
 authorsRouter.get("/:authorId", (request, response) => {
   console.log(request.params.authorId);
 
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const authorsArray = getAuthors();
 
   const requestedAuthor = authorsArray.find(
     (author) => author.id === request.params.authorId
@@ -103,7 +107,7 @@ authorsRouter.put("/:authorId", (request, response) => {
     "+" +
     request.body.surname;
 
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const authorsArray = getAuthors();
 
   const authorIndex = authorsArray.findIndex(
     (author) => author.id === request.params.authorId
@@ -111,19 +115,24 @@ authorsRouter.put("/:authorId", (request, response) => {
 
   const oldAuthor = authorsArray[authorIndex];
 
-  const editedAuthor = { ...oldAuthor, ...request.body, updatedAt: new Date(), avatar: avatarUrl };
+  const editedAuthor = {
+    ...oldAuthor,
+    ...request.body,
+    updatedAt: new Date(),
+    avatar: avatarUrl,
+  };
 
   authorsArray[authorIndex] = editedAuthor;
 
   console.log("Edit Author, updated entry:", editedAuthor);
 
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
+  writeAuthors(authorsArray);
 
   response.send(editedAuthor);
 });
 
 authorsRouter.delete("/:authorId", (request, response) => {
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const authorsArray = getAuthors();
 
   const newAuthorsArray = authorsArray.filter(
     (author) => author.id !== request.params.authorId
@@ -131,7 +140,7 @@ authorsRouter.delete("/:authorId", (request, response) => {
 
   console.log("Author with id " + request.params.authorId + " deleted.");
 
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(newAuthorsArray));
+  writeAuthors(newAuthorsArray);
 
   response.status(204).send();
 });
