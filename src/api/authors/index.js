@@ -14,7 +14,18 @@ console.log("Location of data:", authorsJSONPath);
 const authorsRouter = express.Router();
 
 authorsRouter.post("/", (request, response) => {
-  const newAuthor = { ...request.body, createdAt: new Date(), id: uniqid() };
+  const avatarUrl =
+    "https://ui-avatars.com/api/?name=" +
+    request.body.name +
+    "+" +
+    request.body.surname;
+
+  const newAuthor = {
+    ...request.body,
+    createdAt: new Date(),
+    id: uniqid(),
+    avatar: avatarUrl,
+  };
   console.log("New Author:", newAuthor);
 
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
@@ -29,7 +40,17 @@ authorsRouter.post("/", (request, response) => {
 // check email post
 
 authorsRouter.post("/checkEmail", (request, response) => {
-  const newAuthor = { ...request.body, createdAt: new Date(), id: uniqid() };
+  const avatarUrl =
+    "https://ui-avatars.com/api/?name=" +
+    request.body.name +
+    "+" +
+    request.body.surname;
+  const newAuthor = {
+    ...request.body,
+    createdAt: new Date(),
+    id: uniqid(),
+    avatar: avatarUrl,
+  };
   console.log("New Author:", newAuthor);
 
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
@@ -76,6 +97,12 @@ authorsRouter.get("/:authorId", (request, response) => {
 });
 
 authorsRouter.put("/:authorId", (request, response) => {
+  const avatarUrl =
+    "https://ui-avatars.com/api/?name=" +
+    request.body.name +
+    "+" +
+    request.body.surname;
+
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
 
   const authorIndex = authorsArray.findIndex(
@@ -84,7 +111,7 @@ authorsRouter.put("/:authorId", (request, response) => {
 
   const oldAuthor = authorsArray[authorIndex];
 
-  const editedAuthor = { ...oldAuthor, ...request.body, updatedAt: new Date() };
+  const editedAuthor = { ...oldAuthor, ...request.body, updatedAt: new Date(), avatar: avatarUrl };
 
   authorsArray[authorIndex] = editedAuthor;
 
