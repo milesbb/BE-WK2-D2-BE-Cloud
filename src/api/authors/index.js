@@ -71,9 +71,9 @@ authorsRouter.post("/checkEmail", (request, response) => {
 
     response.status(201).send({ id: newAuthor.id });
   } else {
-    console.log("Email already in use");
+    
 
-    response.status(400).send();
+    response.status(400).send({"message": "Email already in use"});
   }
 });
 
@@ -143,6 +143,7 @@ authorsRouter.delete("/:authorId", (request, response) => {
   writeAuthors(newAuthorsArray);
 
   response.status(204).send();
+  
 });
 
 export default authorsRouter;
