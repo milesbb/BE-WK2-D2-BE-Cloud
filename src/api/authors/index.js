@@ -3,21 +3,11 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
-
-const authorsJSONPath = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "authors.json"
-);
-
-const getAuthors = () => JSON.parse(fs.readFileSync(authorsJSONPath));
-const writeAuthors = (authorsArray) =>
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray));
-
-console.log("Location of data:", authorsJSONPath);
+import { getAuthors, getBlogPosts, writeAuthors } from "../../lib/fs-tools.js";
 
 const authorsRouter = express.Router();
 
-authorsRouter.post("/", (request, response) => {
+authorsRouter.post("/", async (request, response) => {
   const avatarUrl =
     "https://ui-avatars.com/api/?name=" +
     request.body.name +
@@ -32,18 +22,18 @@ authorsRouter.post("/", (request, response) => {
   };
   console.log("New Author:", newAuthor);
 
-  const authorsArray = getAuthors();
+  const authorsArray = await getAuthors();
 
   authorsArray.push(newAuthor);
 
-  writeAuthors(authorsArray);
+  await writeAuthors(authorsArray);
 
   response.status(201).send({ id: newAuthor.id });
 });
 
 // check email post
 
-authorsRouter.post("/checkEmail", (request, response) => {
+authorsRouter.post("/checkEmail", async (request, response) => {
   const avatarUrl =
     "https://ui-avatars.com/api/?name=" +
     request.body.name +
@@ -57,7 +47,7 @@ authorsRouter.post("/checkEmail", (request, response) => {
   };
   console.log("New Author:", newAuthor);
 
-  const authorsArray = getAuthors();
+  const authorsArray = await getAuthors();
 
   if (
     authorsArray.findIndex((author) => author.email === request.body.email) ===
@@ -65,28 +55,26 @@ authorsRouter.post("/checkEmail", (request, response) => {
   ) {
     authorsArray.push(newAuthor);
 
-    writeAuthors(authorsArray);
+    await writeAuthors(authorsArray);
 
     console.log("Unique Email, new author is posted");
 
     response.status(201).send({ id: newAuthor.id });
   } else {
-    
-
-    response.status(400).send({"message": "Email already in use"});
+    response.status(400).send({ message: "Email already in use" });
   }
 });
 
-authorsRouter.get("/", (request, response) => {
-  const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
+authorsRouter.get("/", async (request, response) => {
+  const authorsArray = await getAuthors();
   console.log("Get all authors:", authorsArray);
   response.send(authorsArray);
 });
 
-authorsRouter.get("/:authorId", (request, response) => {
+authorsRouter.get("/:authorId", async (request, response) => {
   console.log(request.params.authorId);
 
-  const authorsArray = getAuthors();
+  const authorsArray = await getAuthors();
 
   const requestedAuthor = authorsArray.find(
     (author) => author.id === request.params.authorId
@@ -100,31 +88,30 @@ authorsRouter.get("/:authorId", (request, response) => {
   response.send(requestedAuthor);
 });
 
-authorsRouter.get("/:authorId/blogPosts", (request, response) => {
-  const blogPostsAddress = join(dirname(dirname(fileURLToPath(import.meta.url)),
-  "authors.json"), "blogPosts/blogPosts.json")
+authorsRouter.get("/:authorId/blogPosts", async (request, response) => {
+  const blogPosts = await getBlogPosts();
 
-  const blogPosts = JSON.parse(fs.readFileSync(blogPostsAddress))
-
-  const authorsArray = getAuthors();
+  const authorsArray = await getAuthors();
 
   const requestedAuthor = authorsArray.find(
     (author) => author.id === request.params.authorId
   );
 
-  const authorsPosts = blogPosts.filter((blogPost)=>blogPost.author.name === requestedAuthor.name)
+  const authorsPosts = blogPosts.filter(
+    (blogPost) => blogPost.author.name === requestedAuthor.name
+  );
 
-  response.send(authorsPosts)
-})
+  response.send(authorsPosts);
+});
 
-authorsRouter.put("/:authorId", (request, response) => {
+authorsRouter.put("/:authorId", async (request, response) => {
   const avatarUrl =
     "https://ui-avatars.com/api/?name=" +
     request.body.name +
     "+" +
     request.body.surname;
 
-  const authorsArray = getAuthors();
+  const authorsArray = await getAuthors();
 
   const authorIndex = authorsArray.findIndex(
     (author) => author.id === request.params.authorId
@@ -143,13 +130,13 @@ authorsRouter.put("/:authorId", (request, response) => {
 
   console.log("Edit Author, updated entry:", editedAuthor);
 
-  writeAuthors(authorsArray);
+  await writeAuthors(authorsArray);
 
   response.send(editedAuthor);
 });
 
-authorsRouter.delete("/:authorId", (request, response) => {
-  const authorsArray = getAuthors();
+authorsRouter.delete("/:authorId", async (request, response) => {
+  const authorsArray = await getAuthors();
 
   const newAuthorsArray = authorsArray.filter(
     (author) => author.id !== request.params.authorId
@@ -157,10 +144,9 @@ authorsRouter.delete("/:authorId", (request, response) => {
 
   console.log("Author with id " + request.params.authorId + " deleted.");
 
-  writeAuthors(newAuthorsArray);
+  await writeAuthors(newAuthorsArray);
 
   response.status(204).send();
-  
 });
 
 export default authorsRouter;
