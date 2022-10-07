@@ -1,15 +1,1 @@
-[
-  {
-    "category": "test",
-    "title": "test",
-    "cover": "https://ucarecdn.com/459eb7be-115a-4d85-b1d8-deaabc94c643/-/format/auto/-/preview/3000x3000/-/quality/lighter/",
-    "readTime": { "value": 2, "unit": "minute" },
-    "author": {
-      "name": "Sammy",
-      "avatar": "https://ui-avatars.com/api/?name=Sammy+Testpost"
-    },
-    "content": "<p>Test carrots</p>",
-    "createdAt": "2022-10-06T14:14:08.402Z",
-    "_id": "juxkz10fpl8x53guq"
-  }
-]
+[{"category":"test","title":"test","cover":"/public/img/covers/juxkz10fpl8x53guq.jpeg","readTime":{"value":2,"unit":"minute"},"author":{"name":"Sammy","avatar":"https://ui-avatars.com/api/?name=Sammy+Testpost"},"content":"<p>Test carrots</p>","comments":[{"name":"John","text":"This is a new comment!","createdAt":"2022-10-07T14:53:12.882Z","_id":"juxkz1iv3l8ylxkj7"}],"createdAt":"2022-10-06T14:14:08.402Z","_id":"juxkz10fpl8x53guq","updatedAt":"2022-10-07T14:29:09.488Z"}]

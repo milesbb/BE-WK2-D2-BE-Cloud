@@ -14,7 +14,7 @@ import multer from "multer";
 
 const authorsRouter = express.Router();
 
-// start of file upload
+// start of AVATAR file upload
 
 authorsRouter.post(
   "/:id/uploadAvatar",

@@ -15,11 +15,12 @@ import blogPostsRouter from "./api/blogPosts/index.js";
 
 const server = express();
 const port = 3001;
-const publicFolderPath = join(process.cwd(), "./public/img/authors");
+const publicFolderPath = join(process.cwd(), "./public/img/");
 
 console.log("public folder path: ", publicFolderPath);
 
-server.use("/public/img/authors", express.static(publicFolderPath));
+server.use("/public/img/authors", express.static(publicFolderPath + "/authors/"));
+server.use("/public/img/covers", express.static(publicFolderPath + "/covers/"));
 
 server.use(
   cors({
