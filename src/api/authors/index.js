@@ -1,11 +1,69 @@
 import express from "express";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { dirname, extname, join } from "path";
 import uniqid from "uniqid";
-import { getAuthors, getBlogPosts, writeAuthors } from "../../lib/fs-tools.js";
+import {
+  authorsPublicFolderPath,
+  getAuthors,
+  getBlogPosts,
+  saveAuthorsAvatars,
+  writeAuthors,
+} from "../../lib/fs-tools.js";
+import multer from "multer";
 
 const authorsRouter = express.Router();
+
+// start of file upload
+
+authorsRouter.post(
+  "/:id/uploadAvatar",
+  multer({ limits: { fileSize: 1024 * 1024 } }).single("avatar"),
+  async (req, res, next) => {
+    try {
+      console.log("file: " + req.file);
+
+      const fileName = req.params.id + extname(req.file.originalname);
+
+      await saveAuthorsAvatars(fileName, req.file.buffer);
+
+      const authorsArray = await getAuthors();
+
+      const newAvatarUrl = join("/public/img/authors/", fileName);
+
+      const authorIndex = authorsArray.findIndex(
+        (author) => author.id === req.params.id
+      );
+
+      if (authorIndex !== -1) {
+        const oldAuthor = authorsArray[authorIndex];
+
+        const editedAuthor = {
+          ...oldAuthor,
+          updatedAt: new Date(),
+          avatar: newAvatarUrl,
+        };
+
+        authorsArray[authorIndex] = editedAuthor;
+
+        console.log("Edit Author, updated entry:", editedAuthor);
+
+        await writeAuthors(authorsArray);
+
+        res.send({
+          message: "Image has been uploaded successfully",
+          editedAuthor: editedAuthor,
+        });
+      } else {
+        next(error);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// end of file upload
 
 authorsRouter.post("/", async (request, response) => {
   const avatarUrl =
