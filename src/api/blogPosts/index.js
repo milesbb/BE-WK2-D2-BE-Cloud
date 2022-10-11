@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, extname, join } from "path";
 import uniqid from "uniqid";
+import { v2 as cloudinary } from "cloudinary"
 import createHttpError from "http-errors";
 import { checkBlogPostSchema, checkValidationResult } from "./validation.js";
 import {
@@ -11,8 +12,69 @@ import {
   writeBlogPosts,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BEwk2d2/blogPosts",
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 },
+}).single("avatar")
 
 const blogPostsRouter = express.Router();
+
+// POST CLOUDINARY COVER IMAGE
+
+blogPostsRouter.post(
+  "/:id/cloudinary",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log("file: " + req.file);
+
+      const fileName = req.params.id + extname(req.file.originalname);
+
+      await saveBlogPostsCovers(fileName, req.file.buffer);
+
+      const blogPostsArray = await getBlogPosts();
+
+      const newCoverUrl = join("/public/img/covers/", fileName);
+
+      const blogPostIndex = blogPostsArray.findIndex(
+        (blogPost) => blogPost._id === req.params.id
+      );
+
+      if (blogPostIndex !== -1) {
+        const oldBlogPost = blogPostsArray[blogPostIndex];
+
+        const editedBlogPost = {
+          ...oldBlogPost,
+          updatedAt: new Date(),
+          cover: newCoverUrl,
+        };
+
+        blogPostsArray[blogPostIndex] = editedBlogPost;
+
+        console.log("Edit Blog Post, updated entry:", editedBlogPost);
+
+        await writeBlogPosts(blogPostsArray);
+
+        res.send({
+          message: "Image has been uploaded successfully",
+          editedBlogPost: editedBlogPost,
+        });
+      } else {
+        next(error);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 // POST COVER IMAGE
 

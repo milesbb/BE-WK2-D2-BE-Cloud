@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, extname, join } from "path";
 import uniqid from "uniqid";
+import { v2 as cloudinary } from "cloudinary"
 import {
   authorsPublicFolderPath,
   getAuthors,
@@ -11,8 +12,68 @@ import {
   writeAuthors,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BEwk2d2/authors",
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 },
+}).single("avatar")
 
 const authorsRouter = express.Router();
+
+// Cloudinary avatar upload
+
+authorsRouter.post(
+  "/:id/cloudinary",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log("file: " + req.file);
+
+      const fileName = req.params.id + extname(req.file.originalname);
+
+      await saveAuthorsAvatars(fileName, req.file.buffer);
+
+      const authorsArray = await getAuthors();
+
+      const newAvatarUrl = join("/public/img/authors/", fileName);
+
+      const authorIndex = authorsArray.findIndex(
+        (author) => author.id === req.params.id
+      );
+
+      if (authorIndex !== -1) {
+        const oldAuthor = authorsArray[authorIndex];
+
+        const editedAuthor = {
+          ...oldAuthor,
+          updatedAt: new Date(),
+          avatar: newAvatarUrl,
+        };
+
+        authorsArray[authorIndex] = editedAuthor;
+
+        console.log("Edit Author, updated entry:", editedAuthor);
+
+        await writeAuthors(authorsArray);
+
+        res.send({
+          message: "Image has been uploaded successfully",
+          editedAuthor: editedAuthor,
+        });
+      } else {
+        next(error);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // start of AVATAR file upload
 
