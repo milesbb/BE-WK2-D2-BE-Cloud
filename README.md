@@ -4,4 +4,4 @@ Backend for react blog app.
 
 Front end link:
 
-https://github.com/milesbb/BE-WK1-D5-Frontend
+https://github.com/milesbb/BE-WK2-D2-Frontend

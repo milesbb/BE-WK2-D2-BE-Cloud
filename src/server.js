@@ -1,4 +1,4 @@
-// Link to frontend: https://github.com/milesbb/BE-WK1-D4-Frontend
+// Link to frontend: https://github.com/milesbb/BE-WK2-D2-Frontend.git
 
 import express from "express";
 import authorsRouter from "./api/authors/index.js";
