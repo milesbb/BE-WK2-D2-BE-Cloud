@@ -14,12 +14,6 @@ const blogPostSchema = {
       errorMessage: "Title is a mandatory field and must be a string/text",
     },
   },
-  cover: {
-    in: ["body"],
-    isString: {
-      errorMessage: "Cover is a mandatory field and must be a string/text",
-    },
-  },
   readTime: {
     value: {
       in: ["readTime"],

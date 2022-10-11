@@ -114,6 +114,109 @@ blogPostsRouter.post("/:id/comments", async (req, res, next) => {
   }
 });
 
+// EDIT POST COMMENT
+
+blogPostsRouter.put("/:id/comments/:commentId", async (req, res, next) => {
+  try {
+    const blogPosts = await getBlogPosts();
+
+    const blogPostIndex = blogPosts.findIndex(
+      (blogPost) => blogPost._id === req.params.id
+    );
+
+    if (blogPostIndex === -1) {
+      next(
+        createHttpError(404, `Blog post with id ${req.params.id} not found`)
+      );
+    } else {
+      const selectedBlogPost = blogPosts[blogPostIndex];
+
+      const commentIndex = selectedBlogPost.comments.findIndex(
+        (comment) => comment._id === req.params.commentId
+      );
+
+      if (commentIndex === -1) {
+        next(
+          createHttpError(
+            404,
+            `Comment with id ${req.params.commentId} not found`
+          )
+        );
+      } else {
+        const oldComment = selectedBlogPost.comments[commentIndex];
+
+        const editedComment = {
+          ...oldComment,
+          ...req.body,
+          updatedAt: new Date(),
+        };
+
+        selectedBlogPost.comments[commentIndex] = editedComment;
+
+        const newBlogPosts = blogPosts;
+        newBlogPosts[blogPostIndex].comments = selectedBlogPost.comments;
+
+        await writeBlogPosts(newBlogPosts);
+
+        res.send(editedComment);
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// DELETE POST COMMENT
+
+blogPostsRouter.delete("/:id/comments/:commentId", async (req, res, next) => {
+  try {
+    const blogPosts = await getBlogPosts();
+
+    const blogPostIndex = blogPosts.findIndex(
+      (blogPost) => blogPost._id === req.params.id
+    );
+
+    if (blogPostIndex === -1) {
+      next(
+        createHttpError(404, `Blog post with id ${req.params.id} not found`)
+      );
+    } else {
+      const selectedBlogPost = blogPosts[blogPostIndex];
+
+      const commentIndex = selectedBlogPost.comments.findIndex(
+        (comment) => comment._id === req.params.commentId
+      );
+      if (commentIndex === -1) {
+        next(
+          createHttpError(
+            404,
+            `Comment with id ${req.params.commentId} not found`
+          )
+        );
+      } else {
+        const newComments = selectedBlogPost.comments.filter(
+          (comment) => comment._id !== req.params.commentId
+        );
+
+        const newBlogPosts = blogPosts;
+
+        newBlogPosts[blogPostIndex].comments = newComments
+  
+        await writeBlogPosts(newBlogPosts);
+  
+        res
+          .status(204)
+          .send({ message: `Comment ${req.params.commentId} deleted` });
+
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST POST
+
 blogPostsRouter.post(
   "/",
   checkBlogPostSchema,

@@ -19,7 +19,10 @@ const publicFolderPath = join(process.cwd(), "./public/img/");
 
 console.log("public folder path: ", publicFolderPath);
 
-server.use("/public/img/authors", express.static(publicFolderPath + "/authors/"));
+server.use(
+  "/public/img/authors",
+  express.static(publicFolderPath + "/authors/")
+);
 server.use("/public/img/covers", express.static(publicFolderPath + "/covers/"));
 
 server.use(

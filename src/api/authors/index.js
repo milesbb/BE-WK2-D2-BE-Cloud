@@ -18,7 +18,7 @@ const authorsRouter = express.Router();
 
 authorsRouter.post(
   "/:id/uploadAvatar",
-  multer({ limits: { fileSize: 1024 * 1024 } }).single("avatar"),
+  multer().single("avatar"),
   async (req, res, next) => {
     try {
       console.log("file: " + req.file);
