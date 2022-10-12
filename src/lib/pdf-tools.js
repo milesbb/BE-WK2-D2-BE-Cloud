@@ -1,5 +1,4 @@
 import PdfPrinter from "pdfmake";
-import PdfFonts from "vfs_fonts";
 import { getAuthors, getBlogPosts } from "./fs-tools.js";
 
 export async function createBlogPostPdf(id) {
