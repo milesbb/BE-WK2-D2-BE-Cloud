@@ -3,14 +3,11 @@ import { getAuthors, getBlogPosts } from "./fs-tools.js";
 
 export async function createBlogPostPdf(id) {
   const fonts = {
-    Roboto: {
-      normal:
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-      bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-      italics:
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-      bolditalics:
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
+    Helvetica: {
+      normal: "Helvetica",
+      bold: "Helvetica-Bold",
+      italics: "Helvetica-Oblique",
+      bolditalics: "Helvetica-BoldOblique",
     },
   };
 
@@ -45,10 +42,10 @@ export async function createBlogPostPdf(id) {
 
   const data = {
     content: [
-    //   {
-    //     image: "blogPicture",
-    //     width: 450,
-    //   },
+      //   {
+      //     image: "blogPicture",
+      //     width: 450,
+      //   },
       {
         text: selectedBlogPost.title,
         style: "header",
@@ -58,11 +55,11 @@ export async function createBlogPostPdf(id) {
         text: selectedBlogPost.category,
         style: "subheader",
       },
-    //   {
-    //     image: "authorPicture",
-    //     width: 50,
-    //     height: 50,
-    //   },
+      //   {
+      //     image: "authorPicture",
+      //     width: 50,
+      //     height: 50,
+      //   },
       {
         text: "By " + selectedAuthor.name + " " + selectedAuthor.surname,
       },
