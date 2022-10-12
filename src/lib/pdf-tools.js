@@ -30,7 +30,7 @@ export async function createBlogPostPdf(id) {
 
   const selectedAuthor = authors[selectedAuthorIndex];
 
-  const removedHTMLContent = selectedBlogPost.substr(
+  const removedHTMLContent = selectedBlogPost.content.substr(
     3,
     selectedBlogPost.content.length - 5
   );
