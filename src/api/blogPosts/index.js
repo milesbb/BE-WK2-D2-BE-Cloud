@@ -26,6 +26,16 @@ const cloudinaryUploader = multer({
   limits: { fileSize: 1024 * 1024 },
 }).single("avatar");
 
+const cloudinaryPDFUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BEwk2d2/PDFs",
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 },
+}).single("avatar");
+
 const blogPostsRouter = express.Router();
 
 // CREATE BLOG POST PDF
@@ -34,9 +44,9 @@ blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
   try {
     const idParam = req.params.id;
     res.setHeader("Content-Disposition", `attachment; filename=blogPost${idParam}.pdf`);
-    const source = createBlogPostPdf(idParam);
+    const source = await createBlogPostPdf(idParam);
     const destination = res;
-    pipeline(source, destination, (error) => {
+    await pipeline(source, destination, (error) => {
       if (error) console.log(error);
     });
   } catch (error) {
