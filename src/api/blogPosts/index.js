@@ -15,6 +15,7 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { createBlogPostPdf } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
+import { promisify } from "util";
 
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
@@ -46,10 +47,12 @@ blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
 
     res.setHeader("Content-Disposition", `attachment; filename=blogPost${idParam}.pdf`);
 
+    const asyncPipeline = promisify(pipeline)
+
     const source = await createBlogPostPdf(idParam);
     const destination = res;
     
-    pipeline(source, destination, (error) => {
+    await asyncPipeline(source, destination, (error) => {
       if (error) console.log(error);
     });
   } catch (error) {
