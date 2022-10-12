@@ -1,7 +1,7 @@
 import PdfPrinter from "pdfmake";
 import { getAuthors, getBlogPosts } from "./fs-tools.js";
 
-export async function createBlogPostPdf(id) {
+export const createBlogPostPdf = async (id) => {
   const fonts = {
     Helvetica: {
       normal: "Helvetica",
@@ -27,18 +27,18 @@ export async function createBlogPostPdf(id) {
 
   const selectedAuthor = authors[selectedAuthorIndex];
 
-  const removedHTMLContent = selectedBlogPost.content.substr(
+  const removedHTMLTagsContent = selectedBlogPost.content.substr(
     3,
     selectedBlogPost.content.length - 5
   );
 
-  const splitContent = removedHTMLContent.split("\n\n");
+//   const splitContent = removedHTMLContent.split("\n\n");
 
-  const finalContent = splitContent.map((element) => {
-    {
-      text: element;
-    }
-  });
+//   const finalContent = splitContent.map((element) => {
+//     {
+//       text: element;
+//     }
+//   });
 
   const docDefinition = {
     content: [
@@ -63,6 +63,9 @@ export async function createBlogPostPdf(id) {
       {
         text: "By " + selectedAuthor.name + " d" + selectedAuthor.surname,
       },
+      {
+        text: removedHTMLTagsContent
+      }
     //   ...finalContent,
     ],
     styles: {
