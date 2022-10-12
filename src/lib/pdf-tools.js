@@ -84,10 +84,10 @@ export async function createBlogPostPdf(id) {
     defaultStyle: {
       font: "Helvetica",
     },
-    // images: {
-    //   blogPicture: selectedBlogPost.cover,
-    //   authorPicture: selectedAuthor.avatar,
-    // },
+    images: {
+      blogPicture: selectedBlogPost.cover,
+      authorPicture: selectedAuthor.avatar,
+    },
   };
 
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
