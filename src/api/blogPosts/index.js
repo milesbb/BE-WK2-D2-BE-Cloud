@@ -13,6 +13,8 @@ import {
 } from "../../lib/fs-tools.js";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { createBlogPostPdf } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
 
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
@@ -25,6 +27,22 @@ const cloudinaryUploader = multer({
 }).single("avatar")
 
 const blogPostsRouter = express.Router();
+
+// CREATE BLOG POST PDF
+
+blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
+  try {
+    const idParam = req.params.id
+    res.setHeader("Content-Disposition", "attachment; filename=books.pdf")
+    const source = createBlogPostPdf(idParam);
+    const destination = res
+    pipeline(source, destination, error => {
+      if (error) console.log(error)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 
 // POST CLOUDINARY COVER IMAGE
 
