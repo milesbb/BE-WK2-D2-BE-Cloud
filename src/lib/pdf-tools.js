@@ -32,13 +32,16 @@ export const createBlogPostPdf = async (id) => {
     selectedBlogPost.content.length - 5
   );
 
-//   const splitContent = removedHTMLContent.split("\n\n");
+  const authorName =
+    "By " + selectedAuthor.name + " d" + selectedAuthor.surname;
 
-//   const finalContent = splitContent.map((element) => {
-//     {
-//       text: element;
-//     }
-//   });
+  //   const splitContent = removedHTMLContent.split("\n\n");
+
+  //   const finalContent = splitContent.map((element) => {
+  //     {
+  //       text: element;
+  //     }
+  //   });
 
   const docDefinition = {
     content: [
@@ -60,13 +63,10 @@ export const createBlogPostPdf = async (id) => {
       //     width: 50,
       //     height: 50,
       //   },
-      {
-        text: "By " + selectedAuthor.name + " d" + selectedAuthor.surname,
-      },
-      {
-        text: removedHTMLTagsContent
-      }
-    //   ...finalContent,
+      authorName,
+      removedHTMLTagsContent,
+
+      //   ...finalContent,
     ],
     styles: {
       header: {
@@ -97,4 +97,4 @@ export const createBlogPostPdf = async (id) => {
   pdfReadableStream.end();
 
   return pdfReadableStream;
-}
+};
