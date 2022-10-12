@@ -42,10 +42,10 @@ export async function createBlogPostPdf(id) {
 
   const docDefinition = {
     content: [
-        {
-          image: "blogPicture",
-          width: 450,
-        },
+      //   {
+      //     image: "blogPicture",
+      //     width: 450,
+      //   },
       {
         text: selectedBlogPost.title,
         style: "header",
@@ -55,15 +55,15 @@ export async function createBlogPostPdf(id) {
         text: selectedBlogPost.category,
         style: "subheader",
       },
-        {
-          image: "authorPicture",
-          width: 50,
-          height: 50,
-        },
+      //   {
+      //     image: "authorPicture",
+      //     width: 50,
+      //     height: 50,
+      //   },
       {
         text: "By " + selectedAuthor.name + " d" + selectedAuthor.surname,
       },
-
+    //   ...finalContent,
     ],
     styles: {
       header: {
@@ -84,10 +84,10 @@ export async function createBlogPostPdf(id) {
     defaultStyle: {
       font: "Helvetica",
     },
-    images: {
-      blogPicture: selectedBlogPost.cover,
-      authorPicture: selectedAuthor.avatar,
-    },
+    // images: {
+    //   blogPicture: selectedBlogPost.cover,
+    //   authorPicture: selectedAuthor.avatar,
+    // },
   };
 
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
