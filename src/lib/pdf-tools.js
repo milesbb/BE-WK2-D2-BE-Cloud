@@ -25,7 +25,7 @@ export async function createBlogPostPdf(id) {
   const selectedBlogPost = blogPosts[blogPostIndex];
 
   const selectedAuthorIndex = authors.findIndex(
-    (author) => author.name === blogPost.author.name
+    (author) => author.name === selectedBlogPost.author.name
   );
 
   const selectedAuthor = authors[selectedAuthorIndex];
