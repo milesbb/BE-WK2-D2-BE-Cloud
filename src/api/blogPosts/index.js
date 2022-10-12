@@ -3,7 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, extname, join } from "path";
 import uniqid from "uniqid";
-import { v2 as cloudinary } from "cloudinary"
+import { v2 as cloudinary } from "cloudinary";
 import createHttpError from "http-errors";
 import { checkBlogPostSchema, checkValidationResult } from "./validation.js";
 import {
@@ -24,7 +24,7 @@ const cloudinaryUploader = multer({
     },
   }),
   limits: { fileSize: 1024 * 1024 },
-}).single("avatar")
+}).single("avatar");
 
 const blogPostsRouter = express.Router();
 
@@ -32,17 +32,17 @@ const blogPostsRouter = express.Router();
 
 blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
   try {
-    const idParam = req.params.id
-    res.setHeader("Content-Disposition", "attachment; filename=books.pdf")
+    const idParam = req.params.id;
+    res.setHeader("Content-Disposition", "attachment; filename=books.pdf");
     const source = createBlogPostPdf(idParam);
-    const destination = res
-    pipeline(source, destination, error => {
-      if (error) console.log(error)
-    })
+    const destination = res;
+    pipeline(source, destination, (error) => {
+      if (error) console.log(error);
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-})
+});
 
 // POST CLOUDINARY COVER IMAGE
 
@@ -55,7 +55,9 @@ blogPostsRouter.post(
 
       const fileName = req.params.id + extname(req.file.originalname);
 
-      const cloudinaryURL = "https://res.cloudinary.com/dycynydei/image/upload/BEwk2d2/blogPosts/" + fileName
+      const cloudinaryURL =
+        "https://res.cloudinary.com/dycynydei/image/upload/BEwk2d2/blogPosts/" +
+        fileName;
 
       const blogPostsArray = await getBlogPosts();
 
@@ -90,7 +92,6 @@ blogPostsRouter.post(
     }
   }
 );
-
 
 // POST COVER IMAGE
 
@@ -278,14 +279,13 @@ blogPostsRouter.delete("/:id/comments/:commentId", async (req, res, next) => {
 
         const newBlogPosts = blogPosts;
 
-        newBlogPosts[blogPostIndex].comments = newComments
-  
+        newBlogPosts[blogPostIndex].comments = newComments;
+
         await writeBlogPosts(newBlogPosts);
-  
+
         res
           .status(204)
           .send({ message: `Comment ${req.params.commentId} deleted` });
-
       }
     }
   } catch (error) {

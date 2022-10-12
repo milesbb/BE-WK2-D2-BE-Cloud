@@ -1,5 +1,5 @@
 import PdfPrinter from "pdfmake";
-import { getAuthors, getBlogPosts } from "./fs-tools";
+import { getAuthors, getBlogPosts } from "./fs-tools.js";
 
 export async function createBlogPostPdf(id) {
   const fonts = {
