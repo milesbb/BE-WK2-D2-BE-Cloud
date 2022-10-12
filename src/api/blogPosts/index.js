@@ -33,7 +33,7 @@ const blogPostsRouter = express.Router();
 blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
   try {
     const idParam = req.params.id;
-    res.setHeader("Content-Disposition", "attachment; filename=books.pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=blogPost${idParam}.pdf`);
     const source = createBlogPostPdf(idParam);
     const destination = res;
     pipeline(source, destination, (error) => {
