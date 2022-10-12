@@ -37,11 +37,9 @@ blogPostsRouter.post(
 
       const fileName = req.params.id + extname(req.file.originalname);
 
-      await saveBlogPostsCovers(fileName, req.file.buffer);
+      const cloudinaryURL = "https://res.cloudinary.com/dycynydei/image/upload/BEwk2d2/blogPosts/" + fileName
 
       const blogPostsArray = await getBlogPosts();
-
-      const newCoverUrl = join("/public/img/covers/", fileName);
 
       const blogPostIndex = blogPostsArray.findIndex(
         (blogPost) => blogPost._id === req.params.id
@@ -53,7 +51,7 @@ blogPostsRouter.post(
         const editedBlogPost = {
           ...oldBlogPost,
           updatedAt: new Date(),
-          cover: newCoverUrl,
+          cover: cloudinaryURL,
         };
 
         blogPostsArray[blogPostIndex] = editedBlogPost;

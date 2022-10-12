@@ -37,11 +37,9 @@ authorsRouter.post(
 
       const fileName = req.params.id + extname(req.file.originalname);
 
-      await saveAuthorsAvatars(fileName, req.file.buffer);
+      const cloudinaryURL = "https://res.cloudinary.com/dycynydei/image/upload/BEwk2d2/authors/" + fileName
 
       const authorsArray = await getAuthors();
-
-      const newAvatarUrl = join("/public/img/authors/", fileName);
 
       const authorIndex = authorsArray.findIndex(
         (author) => author.id === req.params.id
@@ -53,7 +51,7 @@ authorsRouter.post(
         const editedAuthor = {
           ...oldAuthor,
           updatedAt: new Date(),
-          avatar: newAvatarUrl,
+          avatar: cloudinaryURL,
         };
 
         authorsArray[authorIndex] = editedAuthor;
