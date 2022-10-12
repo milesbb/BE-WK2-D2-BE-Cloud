@@ -1,4 +1,5 @@
 import PdfPrinter from "pdfmake";
+import PdfFonts from "vfs_fonts";
 import { getAuthors, getBlogPosts } from "./fs-tools.js";
 
 export async function createBlogPostPdf(id) {
@@ -61,7 +62,7 @@ export async function createBlogPostPdf(id) {
       //     height: 50,
       //   },
       {
-        text: "By " + selectedAuthor.name + " " + selectedAuthor.surname,
+        text: "By " + selectedAuthor.name + " d" + selectedAuthor.surname,
       },
       ...finalContent,
     ],
@@ -80,6 +81,9 @@ export async function createBlogPostPdf(id) {
       small: {
         fontSize: 8,
       },
+    },
+    defaultStyle: {
+      font: "Helvetica",
     },
     // images: {
     //   blogPicture: selectedBlogPost.cover,
