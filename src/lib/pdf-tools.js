@@ -1,5 +1,6 @@
 import PdfPrinter from "pdfmake";
 import { getAuthors, getBlogPosts } from "./fs-tools.js";
+import fs from "fs-extra";
 
 export const createBlogPostPdf = async (id) => {
   const fonts = {
@@ -93,9 +94,10 @@ export const createBlogPostPdf = async (id) => {
     // },
   };
 
-  console.log(docDefinition)
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
-//   pdfReadableStream.end();
+
+  pdfReadableStream.pipe(fs.createWriteStream("test.pdf"));
+  pdfReadableStream.end();
 
   return pdfReadableStream;
 };
