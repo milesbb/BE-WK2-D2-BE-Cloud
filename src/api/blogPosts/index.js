@@ -1,5 +1,5 @@
 import express from "express";
-import fs from "fs";
+import fs, { createReadStream, createWriteStream } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, extname, join } from "path";
 import uniqid from "uniqid";
@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import createHttpError from "http-errors";
 import { checkBlogPostSchema, checkValidationResult } from "./validation.js";
 import {
+  blogPostsJSONPath,
   getBlogPosts,
   saveBlogPostsCovers,
   writeBlogPosts,
@@ -15,6 +16,9 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { createBlogPostPdf } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
+import sgMail from "@sendgrid/mail";
+import { Transform } from "json2csv";
+import streamToArray from "stream-to-array";
 
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
@@ -26,17 +30,54 @@ const cloudinaryUploader = multer({
   limits: { fileSize: 1024 * 1024 },
 }).single("avatar");
 
-const cloudinaryPDFUploader = multer({
-  storage: new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: "BEwk2d2/PDFs",
-    },
-  }),
-  limits: { fileSize: 1024 * 1024 },
-}).single("avatar");
-
 const blogPostsRouter = express.Router();
+
+// SEND EMAIL
+
+blogPostsRouter.get("/email", (req, res, next) => {
+  try {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    const msg = {
+      to: "milesjbb@gmail.com",
+      from: "milesjbb@gmail.com",
+      subject: "Post created!",
+      text: `Post created`,
+      html: "<strong>Post created</strong>",
+    };
+
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log("email sent!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// CREATE CSV
+
+blogPostsRouter.get("/csv", async (req, res, next) => {
+  try {
+    const blogPostsArray = await getBlogPosts();
+    const opts = { blogPostsArray };
+    const transformOpts = { highWaterMark: 16384, encoding: "utf-8" };
+
+    res.setHeader("Content-Disposition", "attachment; filename=blogPosts.csv");
+
+    const source = createReadStream(blogPostsJSONPath, { encoding: "utf8" });
+    const transform = new Transform(opts, transformOpts);
+    const destination = res;
+
+    pipeline(source, transform, destination, (error) => {
+      if (error) console.log(error);
+    });
+  } catch (error) {}
+});
 
 // CREATE BLOG POST PDF
 
@@ -44,11 +85,14 @@ blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
   try {
     const idParam = req.params.id;
 
-    res.setHeader("Content-Disposition", `attachment; filename=blogPost${idParam}.pdf`);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=blogPost${idParam}.pdf`
+    );
 
-    const source = await createBlogPostPdf(idParam)
+    const source = await createBlogPostPdf(idParam);
     const destination = res;
-    
+
     pipeline(source, destination, (error) => {
       if (error) console.log(error);
     });
@@ -325,6 +369,49 @@ blogPostsRouter.post(
       blogPosts.push(newBlogPost);
 
       await writeBlogPosts(blogPosts);
+
+      // pdf
+
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      streamToArray(await createBlogPostPdf(newBlogPost._id), (err, arr) => {
+        var buffer = Buffer.concat(arr).toString("base64");
+
+        const msg = {
+          to: "milesjbb@gmail.com",
+          from: "milesjbb@gmail.com",
+          subject: "Post created!",
+          text: `Post created`,
+          html: "<strong>Post created</strong>",
+          attachments: [
+            {
+              content: buffer,
+              filename: "newBlogPost.pdf",
+              type: "application/pdf",
+              disposition: "attachment",
+            },
+          ],
+        };
+
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.log("email sent!");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+
+      // const destination = null;
+
+      // pipeline(source, destination, (error) => {
+      //   if (error) {
+      //     console.log(error);
+      //   } else {
+      //     // email code
+      //     // end of email code
+      //   }
+      // });
 
       res.status(201).send({ _id: newBlogPost._id });
     } catch (error) {

@@ -26,16 +26,20 @@ export const createBlogPostPdf = async (id) => {
     (author) => author.name === selectedBlogPost.author.name
   );
 
-  const selectedAuthor = authors[selectedAuthorIndex];
+  let authorName = ""
 
+  if (selectedAuthorIndex === -1) {
+    authorName = selectedBlogPost.author.name;
+  } else {
+    const selectedAuthor = authors[selectedAuthorIndex];
+
+    authorName =
+      "By " + selectedAuthor.name + " d" + selectedAuthor.surname;
+  }
   const removedHTMLTagsContent = selectedBlogPost.content.substr(
     3,
-    selectedBlogPost.content.length - 5
+    selectedBlogPost.content.length - 7
   );
-
-  const authorName =
-    "By " + selectedAuthor.name + " d" + selectedAuthor.surname;
-
   //   const splitContent = removedHTMLContent.split("\n\n");
 
   //   const finalContent = splitContent.map((element) => {
@@ -44,64 +48,64 @@ export const createBlogPostPdf = async (id) => {
   //     }
   //   });
 
-    const docDefinition = {
-      content: [
-        //   {
-        //     image: "blogPicture",
-        //     width: 450,
-        //   },
-        {
-          text: selectedBlogPost.title,
-          style: "header",
-          alignment: "center",
-        },
-        {
-          text: selectedBlogPost.category,
-          style: "subheader",
-        },
-        //   {
-        //     image: "authorPicture",
-        //     width: 50,
-        //     height: 50,
-        //   },
-        authorName,
-        removedHTMLTagsContent,
-
-        //   ...finalContent,
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-        },
-        subheader: {
-          fontSize: 15,
-          bold: true,
-        },
-        quote: {
-          italics: true,
-        },
-        small: {
-          fontSize: 8,
-        },
-        defaultStyle: {
-          font: "Helvetica",
-        },
+  const docDefinition = {
+    content: [
+      //   {
+      //     image: "blogPicture",
+      //     width: 450,
+      //   },
+      {
+        text: selectedBlogPost.title,
+        style: "header",
+        alignment: "center",
       },
+      {
+        text: selectedBlogPost.category,
+        style: "subheader",
+      },
+      //   {
+      //     image: "authorPicture",
+      //     width: 50,
+      //     height: 50,
+      //   },
+      authorName,
+      removedHTMLTagsContent,
+
+      //   ...finalContent,
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+      },
+      subheader: {
+        fontSize: 15,
+        bold: true,
+      },
+      quote: {
+        italics: true,
+      },
+      small: {
+        fontSize: 8,
+      },
+      defaultStyle: {
+        font: "Helvetica",
+      },
+    },
     // images: {
     //   blogPicture: selectedBlogPost.cover,
     //   authorPicture: selectedAuthor.avatar,
     // },
-    };
+  };
 
-//   const testDocContent = {
-//     content: [{ text: "hello" }],
-//     styles: {
-//       defaultStyle: {
-//         font: "Helvetica",
-//       },
-//     },
-//   };
+  //   const testDocContent = {
+  //     content: [{ text: "hello" }],
+  //     styles: {
+  //       defaultStyle: {
+  //         font: "Helvetica",
+  //       },
+  //     },
+  //   };
 
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
 
