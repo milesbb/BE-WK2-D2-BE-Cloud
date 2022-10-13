@@ -46,7 +46,7 @@ blogPostsRouter.get("/:id/pdf", async (req, res, next) => {
 
     res.setHeader("Content-Disposition", `attachment; filename=blogPost${idParam}.pdf`);
 
-    const source = await  createBlogPostPdf(idParam)
+    const source = await createBlogPostPdf(idParam)
     const destination = res;
     
     pipeline(source, destination, (error) => {

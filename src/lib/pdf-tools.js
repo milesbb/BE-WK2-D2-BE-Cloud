@@ -4,7 +4,7 @@ import fs from "fs-extra";
 
 export const createBlogPostPdf = async (id) => {
   const fonts = {
-    Helvetica: {
+    Roboto: {
       normal: "Helvetica",
       bold: "Helvetica-Bold",
       italics: "Helvetica-Oblique",
@@ -44,60 +44,71 @@ export const createBlogPostPdf = async (id) => {
   //     }
   //   });
 
-  const docDefinition = {
-    content: [
-      //   {
-      //     image: "blogPicture",
-      //     width: 450,
-      //   },
-      {
-        text: selectedBlogPost.title,
-        style: "header",
-        alignment: "center",
-      },
-      {
-        text: selectedBlogPost.category,
-        style: "subheader",
-      },
-      //   {
-      //     image: "authorPicture",
-      //     width: 50,
-      //     height: 50,
-      //   },
-      authorName,
-      removedHTMLTagsContent,
+    const docDefinition = {
+      content: [
+        //   {
+        //     image: "blogPicture",
+        //     width: 450,
+        //   },
+        {
+          text: selectedBlogPost.title,
+          style: "header",
+          alignment: "center",
+        },
+        {
+          text: selectedBlogPost.category,
+          style: "subheader",
+        },
+        //   {
+        //     image: "authorPicture",
+        //     width: 50,
+        //     height: 50,
+        //   },
+        authorName,
+        removedHTMLTagsContent,
 
-      //   ...finalContent,
-    ],
-    styles: {
-      header: {
-        fontSize: 18,
-        bold: true,
+        //   ...finalContent,
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+        },
+        subheader: {
+          fontSize: 15,
+          bold: true,
+        },
+        quote: {
+          italics: true,
+        },
+        small: {
+          fontSize: 8,
+        },
+        defaultStyle: {
+          font: "Helvetica",
+        },
       },
-      subheader: {
-        fontSize: 15,
-        bold: true,
-      },
-      quote: {
-        italics: true,
-      },
-      small: {
-        fontSize: 8,
-      },
-    },
-    defaultStyle: {
-      font: "Helvetica",
-    },
     // images: {
     //   blogPicture: selectedBlogPost.cover,
     //   authorPicture: selectedAuthor.avatar,
     // },
-  };
+    };
+
+//   const testDocContent = {
+//     content: [{ text: "hello" }],
+//     styles: {
+//       defaultStyle: {
+//         font: "Helvetica",
+//       },
+//     },
+//   };
 
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
 
-  pdfReadableStream.pipe(fs.createWriteStream("test.pdf"));
+  //   pdfReadableStream.pipe(fs.createWriteStream("test.pdf"));
   pdfReadableStream.end();
 
   return pdfReadableStream;
+
+  //   add code to delete file after
 };
