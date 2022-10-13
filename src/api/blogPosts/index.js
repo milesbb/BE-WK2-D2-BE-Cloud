@@ -374,7 +374,7 @@ blogPostsRouter.post(
 
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       streamToArray(await createBlogPostPdf(newBlogPost._id), (err, arr) => {
-        var buffer = Buffer.concat(arr).toString("base64");
+        let buffer = Buffer.concat(arr).toString("base64");
 
         const msg = {
           to: "milesjbb@gmail.com",

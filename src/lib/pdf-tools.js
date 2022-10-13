@@ -1,6 +1,7 @@
 import PdfPrinter from "pdfmake";
 import { getAuthors, getBlogPosts } from "./fs-tools.js";
 import fs from "fs-extra";
+import imageToBase64 from "image-to-base64";
 
 export const createBlogPostPdf = async (id) => {
   const fonts = {
@@ -26,50 +27,53 @@ export const createBlogPostPdf = async (id) => {
     (author) => author.name === selectedBlogPost.author.name
   );
 
-  let authorName = ""
+  let authorName = "";
 
   if (selectedAuthorIndex === -1) {
     authorName = selectedBlogPost.author.name;
   } else {
     const selectedAuthor = authors[selectedAuthorIndex];
 
-    authorName =
-      "By " + selectedAuthor.name + " d" + selectedAuthor.surname;
+    authorName = "By " + selectedAuthor.name + " d" + selectedAuthor.surname;
   }
   const removedHTMLTagsContent = selectedBlogPost.content.substr(
     3,
     selectedBlogPost.content.length - 7
   );
-  //   const splitContent = removedHTMLContent.split("\n\n");
 
-  //   const finalContent = splitContent.map((element) => {
-  //     {
-  //       text: element;
-  //     }
-  //   });
+  const blogPostCoverBase64 = await imageToBase64(selectedBlogPost.cover);
+  const blogPostCoverImage = "data:image/jpeg;base64," + blogPostCoverBase64
 
   const docDefinition = {
     content: [
-      //   {
-      //     image: "blogPicture",
-      //     width: 450,
-      //   },
       {
-        text: selectedBlogPost.title,
+        image: "blogPicture",
+        width: 450,
+        alignment: "center",
+      },
+      {
+        text: ("\n"+ selectedBlogPost.title + "\n\n"),
         style: "header",
         alignment: "center",
       },
       {
-        text: selectedBlogPost.category,
+        text: ("\n"+ selectedBlogPost.category + "\n\n"),
         style: "subheader",
+        alignment: "center",
       },
       //   {
       //     image: "authorPicture",
       //     width: 50,
       //     height: 50,
       //   },
-      authorName,
-      removedHTMLTagsContent,
+      {
+        text: authorName,
+        alignment: "left",
+      },
+      {
+        text: ("\n"+ removedHTMLTagsContent + "\n\n"),
+        alignment: "justify",
+      },
 
       //   ...finalContent,
     ],
@@ -92,10 +96,10 @@ export const createBlogPostPdf = async (id) => {
         font: "Helvetica",
       },
     },
-    // images: {
-    //   blogPicture: selectedBlogPost.cover,
-    //   authorPicture: selectedAuthor.avatar,
-    // },
+    images: {
+      blogPicture: blogPostCoverImage,
+      // authorPicture: selectedAuthor.avatar,
+    },
   };
 
   //   const testDocContent = {
