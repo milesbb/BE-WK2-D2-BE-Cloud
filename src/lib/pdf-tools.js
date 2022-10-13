@@ -42,7 +42,7 @@ export const createBlogPostPdf = async (id) => {
   );
 
   const blogPostCoverBase64 = await imageToBase64(selectedBlogPost.cover);
-  const blogPostCoverImage = "data:image/jpeg;base64," + blogPostCoverBase64
+  const blogPostCoverImage = "data:image/jpeg;base64," + blogPostCoverBase64;
 
   const docDefinition = {
     content: [
@@ -52,12 +52,12 @@ export const createBlogPostPdf = async (id) => {
         alignment: "center",
       },
       {
-        text: ("\n"+ selectedBlogPost.title + "\n\n"),
+        text: "\n" + selectedBlogPost.title + "\n\n",
         style: "header",
         alignment: "center",
       },
       {
-        text: ("\n"+ selectedBlogPost.category + "\n\n"),
+        text: "\n" + selectedBlogPost.category + "\n\n",
         style: "subheader",
         alignment: "center",
       },
@@ -71,7 +71,7 @@ export const createBlogPostPdf = async (id) => {
         alignment: "left",
       },
       {
-        text: ("\n"+ removedHTMLTagsContent + "\n\n"),
+        text: "\n" + removedHTMLTagsContent + "\n\n",
         alignment: "justify",
       },
 
@@ -114,7 +114,6 @@ export const createBlogPostPdf = async (id) => {
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
 
   //   pdfReadableStream.pipe(fs.createWriteStream("test.pdf"));
-  pdfReadableStream.end();
 
   return pdfReadableStream;
 
