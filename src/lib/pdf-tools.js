@@ -114,6 +114,7 @@ export const createBlogPostPdf = async (id) => {
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
 
   //   pdfReadableStream.pipe(fs.createWriteStream("test.pdf"));
+  pdfReadableStream.end();
 
   return pdfReadableStream;
 
